@@ -51,13 +51,13 @@ public class MainScreen extends JFrame{
         this.setSize(500,600);
         this.setLocationRelativeTo(null);
         this.setTitle("Library Management System - V 0.0");
+        this.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         
         jPnlNav = new JPanel();
         jPnlNav.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPnlNav.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPnlNav.setSize(150,600);
         
-        this.getContentPane().add(jPnlNav);
+        getContentPane().add(jPnlNav, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 600));
         
     }
 }

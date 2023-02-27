@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import libraryClasses.*;
 
 /**
  * 
@@ -17,7 +20,7 @@ import javax.swing.Timer;
  *      +--------------------------+
  *
  *  This class contains all interfaces with users to work. 
- *  When Section are changed, frame does not swiped, but central panel swiped.
+ *  - When Section are changed, frame does not swiped, but central panel swiped
  * 
  */
 
@@ -30,17 +33,23 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     private final Color bgScdColor = new Color(204,204,204); // Dark gray.
     private final Color fontFrsColor = new Color(0,0,0); // black
     private final Color fontScdColor = new Color(153,0,0); // Dark red.
+    // Internal - attributes
     private Timer timerExp;
     private Timer timerCon;
     private JPanel extendPanel;
+    private int animVel;
+    // External - attributes
+    private Controllers.UiController uiController;
     
     // Constructor
-    public ShowBooksFrame() {
+    public ShowBooksFrame(Controllers.UiController uic) {
         initComponents();
         initTimers();
         this.setSize(500,500);
         this.setLocationRelativeTo(null);
         this.setTitle("Minimalist Management Library - V 0.0");
+        animVel = 5;
+        uiController = uic;
     }
     
     /*
@@ -51,13 +60,14 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         timerExp = new Timer(16, new ActionListener (){
             public void actionPerformed(ActionEvent e) {
                 if (extendPanel.getHeight() < extendPanel.getMaximumSize().height){
-                    extendPanel.setSize(extendPanel.getWidth(), extendPanel.getHeight() +5);
+                    extendPanel.setSize(extendPanel.getWidth(), extendPanel.getHeight() +animVel);
                     // If the panel is the first child of its parent, move the other child DOWN. 
                     if (extendPanel.getParent().getComponent(0) == extendPanel){
                         JPanel movePanel = (JPanel)extendPanel.getParent().getComponent(1);
-                        movePanel.setLocation(movePanel.getX(), movePanel.getY() + 5);
+                        movePanel.setLocation(movePanel.getX(), movePanel.getY() + animVel);
                     }
                 } else {
+                    extendPanel.setSize(extendPanel.getMaximumSize());
                     timerExp.stop();
                 }
             }
@@ -67,11 +77,11 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         timerCon = new Timer(16,new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 if (extendPanel.getHeight() > extendPanel.getComponent(0).getHeight() ){
-                    extendPanel.setSize(extendPanel.getWidth(), extendPanel.getHeight() -3);
+                    extendPanel.setSize(extendPanel.getWidth(), extendPanel.getHeight() -(animVel/2));
                     // If the panel is the first child of its parent, move the other child UP. 
                      if (extendPanel.getParent().getComponent(0) == extendPanel){
                         JPanel movePanel = (JPanel)extendPanel.getParent().getComponent(1);
-                        movePanel.setLocation(movePanel.getX(), movePanel.getY() - 2);
+                        movePanel.setLocation(movePanel.getX(), movePanel.getY() - (animVel/2));
                     }
                 } else {
                     timerCon.stop();
@@ -112,9 +122,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jLblMbrSurname = new javax.swing.JLabel();
         jTxtMbrSurname = new javax.swing.JTextField();
         jLblMbrFile = new javax.swing.JLabel();
-        jTxtMbrFile = new javax.swing.JTextField();
         jLblMbrID = new javax.swing.JLabel();
-        jTxtMbrID = new javax.swing.JTextField();
         jLblMbrStreet = new javax.swing.JLabel();
         jTxtMbrStreet = new javax.swing.JTextField();
         jLblMbrHNum = new javax.swing.JLabel();
@@ -128,6 +136,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jLblMbrTlp2 = new javax.swing.JLabel();
         jTxtMbrTlp2 = new javax.swing.JTextField();
         jLblMbrTitleDetail = new javax.swing.JLabel();
+        jTxtMbrFile = new javax.swing.JTextField();
+        jTxtMbrDni = new javax.swing.JFormattedTextField();
         jPnlSeeAllMbrContent = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jLstMbrSrch = new javax.swing.JList<>();
@@ -279,6 +289,11 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jPnlAddMbrContent.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jBtnAddMbr.setText("Añadir ");
+        jBtnAddMbr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnAddMbrActionPerformed(evt);
+            }
+        });
 
         jLblMbrName.setText("Nombre:");
 
@@ -305,6 +320,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jLblMbrTitleDetail.setFont(mFrstFont);
         jLblMbrTitleDetail.setText("Agregar Socio:");
 
+        jTxtMbrDni.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+
         javax.swing.GroupLayout jPnlAddMbrContentLayout = new javax.swing.GroupLayout(jPnlAddMbrContent);
         jPnlAddMbrContent.setLayout(jPnlAddMbrContentLayout);
         jPnlAddMbrContentLayout.setHorizontalGroup(
@@ -319,10 +336,6 @@ public class ShowBooksFrame extends javax.swing.JFrame {
                         .addGroup(jPnlAddMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLblMbrTlp1)
                             .addGroup(jPnlAddMbrContentLayout.createSequentialGroup()
-                                .addComponent(jLblMbrTlp2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTxtMbrTlp2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPnlAddMbrContentLayout.createSequentialGroup()
                                 .addGroup(jPnlAddMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLblMbrHNum)
                                     .addComponent(jLblMbrID)
@@ -336,11 +349,11 @@ public class ShowBooksFrame extends javax.swing.JFrame {
                                         .addComponent(jLblMbrFlat)
                                         .addGap(126, 126, 126))
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPnlAddMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jTxtMbrDni, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jTxtMbrFile, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jTxtMbrFlat, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jTxtMbrSurname, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jTxtMbrFile, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jTxtMbrID, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jTxtMbrStreet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTxtMbrStreet, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
                                         .addComponent(jTxtMbrTlp1, javax.swing.GroupLayout.Alignment.LEADING))))
                             .addGroup(jPnlAddMbrContentLayout.createSequentialGroup()
                                 .addComponent(jLblMbrAge)
@@ -350,7 +363,11 @@ public class ShowBooksFrame extends javax.swing.JFrame {
                             .addGroup(jPnlAddMbrContentLayout.createSequentialGroup()
                                 .addComponent(jLblMbrName)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTxtMbrName, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jTxtMbrName, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPnlAddMbrContentLayout.createSequentialGroup()
+                                .addComponent(jLblMbrTlp2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTxtMbrTlp2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(50, Short.MAX_VALUE))))
             .addGroup(jPnlAddMbrContentLayout.createSequentialGroup()
                 .addGap(127, 127, 127)
@@ -377,7 +394,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPnlAddMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLblMbrID)
-                    .addComponent(jTxtMbrID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTxtMbrDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPnlAddMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLblMbrStreet)
@@ -408,11 +425,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jPnlSeeAllMbrContent.setBackground(bgScdColor);
         jPnlSeeAllMbrContent.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jLstMbrSrch.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Jose" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        jLstMbrSrch.setEnabled(false);
         jScrollPane2.setViewportView(jLstMbrSrch);
 
         jLblMbrSrchDetail.setText("( Doble click para ver informacion del socio)");
@@ -424,7 +437,6 @@ public class ShowBooksFrame extends javax.swing.JFrame {
             .addGroup(jPnlSeeAllMbrContentLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPnlSeeAllMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                     .addGroup(jPnlSeeAllMbrContentLayout.createSequentialGroup()
                         .addGroup(jPnlSeeAllMbrContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPnlSeeAllMbrContentLayout.createSequentialGroup()
@@ -434,7 +446,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
                             .addGroup(jPnlSeeAllMbrContentLayout.createSequentialGroup()
                                 .addGap(28, 28, 28)
                                 .addComponent(jLblMbrSrchDetail)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 1, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPnlSeeAllMbrContentLayout.setVerticalGroup(
@@ -446,9 +459,9 @@ public class ShowBooksFrame extends javax.swing.JFrame {
                     .addComponent(jBtnMbrSrch, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(3, 3, 3)
                 .addComponent(jLblMbrSrchDetail)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -593,6 +606,11 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jLblConfig.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLblConfig.setText("Configuracion");
         jLblConfig.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLblConfig.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jLblConfigMousePressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout JpnlConfigLayout = new javax.swing.GroupLayout(JpnlConfig);
         JpnlConfig.setLayout(JpnlConfigLayout);
@@ -797,6 +815,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jLblShowMbrAllMouseExited
 
     private void jLblShowBksAllMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLblShowBksAllMousePressed
+        
         ChangePnl(jPnlSeeAllBkContent);
     }//GEN-LAST:event_jLblShowBksAllMousePressed
 
@@ -813,9 +832,51 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jLblAddMbrMouseClicked
 
     private void jLblShowMbrAllMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLblShowMbrAllMouseClicked
+        if (jLstMbrSrch.getModel().getSize() == 0){
+            String[] lst = uiController.CallDbGetMembersName();
+            if (lst != null){  
+                DefaultListModel model = new DefaultListModel();
+                for(String m:lst){
+                    model.addElement(m);
+                }
+                jLstMbrSrch.setModel(model);
+                jLstMbrSrch.setEnabled(true);
+            }
+        }
         ChangePnl(jPnlSeeAllMbrContent);
     }//GEN-LAST:event_jLblShowMbrAllMouseClicked
-    
+
+    private void jLblConfigMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLblConfigMousePressed
+        uiController.ChangeFrame(1);
+    }//GEN-LAST:event_jLblConfigMousePressed
+
+    private void jBtnAddMbrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnAddMbrActionPerformed
+        boolean addOk = true;
+        Member temp = new Member();
+        
+        if(jTxtMbrName.getText().trim().isEmpty()){
+            addOk = false;
+        }
+        if(jTxtMbrSurname.getText().trim().isEmpty()){
+            addOk = false;
+        }
+        if(addOk){
+            temp.setName(jTxtMbrName.getText().trim());
+            temp.setSurname(jTxtMbrSurname.getText().trim());
+            temp.setFile(jTxtMbrFile.getText().trim()); 
+            temp.setAddress(jTxtMbrStreet.getText().trim() + " " + jTxtMbrHNum.getText().trim() + " " + jTxtMbrFlat.getText().trim());
+            temp.setTel1(jTxtMbrTlp1.getText());
+            temp.setTel2(jTxtMbrTlp2.getText());
+            if(!jTxtMbrAge.getText().isEmpty()){
+                temp.setAge(Integer.parseInt(jTxtMbrAge.getText()) );
+            }
+            if(!jTxtMbrDni.getText().isEmpty()){
+                temp.setDni( Integer.parseInt( jTxtMbrDni.getText()));
+            }
+            uiController.CallDbSaveMember(temp);
+        } 
+    }//GEN-LAST:event_jBtnAddMbrActionPerformed
+     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel JpnlConfig;
     private javax.swing.JButton jBtnAddBk;
@@ -878,10 +939,10 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpnMaxRow;
     private javax.swing.JTextField jTxtAthr;
     private javax.swing.JFormattedTextField jTxtMbrAge;
+    private javax.swing.JFormattedTextField jTxtMbrDni;
     private javax.swing.JTextField jTxtMbrFile;
     private javax.swing.JTextField jTxtMbrFlat;
     private javax.swing.JTextField jTxtMbrHNum;
-    private javax.swing.JTextField jTxtMbrID;
     private javax.swing.JTextField jTxtMbrName;
     private javax.swing.JTextField jTxtMbrSrch;
     private javax.swing.JTextField jTxtMbrStreet;

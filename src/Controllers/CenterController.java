@@ -14,11 +14,11 @@ public class CenterController {
     private DbController dataBase = null;
 
     public CenterController() {
-        uiController = new UiController();
+        uiController = new UiController(this);
         System.out.println("Okey let's GO!");
     }
     
-    private DbController getDB(){
+    public DbController getDB(){
     if (dataBase == null){
         dataBase = new DbController();
     }
