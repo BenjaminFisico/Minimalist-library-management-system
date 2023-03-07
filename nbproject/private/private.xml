@@ -5,7 +5,9 @@
         <group>
             <file>file:/C:/Users/benja/Documents/NetBeansProjects/LibraryManagementSystem/src/Controllers/UiController.java</file>
             <file>file:/C:/Users/benja/Documents/NetBeansProjects/LibraryManagementSystem/src/UserInterfaces/ShowBooksFrame.java</file>
+            <file>file:/C:/Users/benja/Documents/NetBeansProjects/LibraryManagementSystem/src/UserInterfaces/AddGenrejDialog.java</file>
             <file>file:/C:/Users/benja/Documents/NetBeansProjects/LibraryManagementSystem/src/Controllers/DbController.java</file>
+            <file>file:/C:/Users/benja/Documents/NetBeansProjects/LibraryManagementSystem/src/Controllers/CenterController.java</file>
         </group>
     </open-files>
 </project-private>

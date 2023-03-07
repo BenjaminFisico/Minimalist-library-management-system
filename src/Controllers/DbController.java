@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import libraryClasses.*;
@@ -20,20 +21,21 @@ import libraryClasses.*;
  *  This class serves as a mediator between the program and the databased.
  *  - Conection is open when is necessary using ConOpen() method, then is closed using ConClosed() method,
  *  that process is used in all other methods.
+ * - The methods are now static, it is to ease call it.
  */
 public class DbController {
     
     private static Connection con;
-    private PreparedStatement stmt = null;
+    private static PreparedStatement stmt = null;
     
     // Constructor
     public DbController(){}
     
-    /* 
+    /**
       This method is used to open connection with your database!
       You must not forget to close.
     */
-    private void ConOpen(){
+    private static void ConOpen(){
         try {
             con= DriverManager.getConnection("jdbc:mysql://localhost/librarymanagementsystem?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" , "root", "123698745");
         }catch (SQLException ex) {
@@ -41,12 +43,12 @@ public class DbController {
         }
     }
     
-    /*
+    /**
       This method is used to execute SQL SELECT query in the database.
       @param query Sets execute query.
       @return ResultSet An object containing all database responses or null if it is the case.
     */
-    private ResultSet ExecuteSelectQuery(String query){
+    private static ResultSet ExecuteSelectQuery(String query){
         try{
             stmt = con.prepareStatement(query);
             return stmt.executeQuery();
@@ -56,12 +58,12 @@ public class DbController {
         return null;
     }
     
-    /*
+    /**
       This method is used to obtain rows of member table in database.
       @param condition It indicate member search condition in SQL syntax (WHERE CLAUSE).
       @return ArrayList A list that contains all obtained members.
     */
-    public ArrayList GetMembers(String condition){
+    public static ArrayList GetMembers(String condition){
         ArrayList<Member> list = new ArrayList();
         ConOpen();
         String query = "SELECT * FROM MEMBER " + condition;
@@ -88,12 +90,12 @@ public class DbController {
         return list;
     }
     
-     /*
+     /**
       This method is used to obtain rows of books table in database.
       @param condition It indicate book search condition in SQL syntax (WHERE CLAUSE).
       @return ArrayList A list that contains all obtained books.
     */
-    public ArrayList GetBooks(String condition){
+    public static ArrayList GetBooks(String condition){
         ArrayList<Book> list = new ArrayList();
         ConOpen();
         String query = "SELECT * FROM BOOK " + condition;
@@ -116,20 +118,19 @@ public class DbController {
         return list;
     }
     
-    /*
+    /**
       This method is used to obtain the name of genres in database.
       @param condition it indicate genre search condition in SQL syntax (WHERE CLAUSE).
       @return String[] A list that contains all genres names.
     */
-    public String[] GetGenres(String condition){
+    public static List<String> GetGenres(String condition){
         ConOpen();
-        String[] lst = null;
+        List<String> lst = new ArrayList<>();
         String query = "SELECT Name FROM Genre "+condition;
         ResultSet rs = ExecuteSelectQuery(query);
         try{
-            lst = new String[stmt.getMetaData().getColumnCount()-1];
             while(rs.next()){
-                lst[rs.getRow()-1] = rs.getString("name");
+                lst.add(rs.getString("name"));
             }
             stmt.close();
             rs.close();
@@ -142,21 +143,19 @@ public class DbController {
         return null;
     }
     
-    /*
+    /**
       This method is used to obtain the name and surname of members in database.
       @param condition it indicate member search condition in SQL syntax (WHERE CLAUSE).
       @return String[] A list that contains all members names.
     */
-    public String[] GetMembersName(String condition){
+    public static List<String> GetMembersName(String condition){
         ConOpen();
-        String[] lst = null;
-        int lstdim = 0;
+        List<String> lst = new ArrayList<>();
         String query = "SELECT Name,Surname FROM MEMBER "+condition;
         ResultSet rs = ExecuteSelectQuery(query);
         try{
-            lst = new String[stmt.getMetaData().getColumnCount()-1];
             while(rs.next()){
-                lst[rs.getRow()-1] = rs.getString("name") + " " + rs.getString("surname");
+                lst.add(rs.getString("name") + " " + rs.getString("surname"));
             }
             stmt.close();
             rs.close();
@@ -169,20 +168,19 @@ public class DbController {
         return null;
     }
     
-    /*
+    /**
       This method is used to obtain the name of books in database.
       @param condition it indicate book search condition in SQL syntax (WHERE CLAUSE).
       @return String[] A list that contains all books names.
     */
-    public String[] getBooksName(String condition){
+    public static List<String> getBooksName(String condition){
         ConOpen();
-        String[] lst;
+        List<String> lst = new ArrayList<>();
         String query = "SELECT Title,Author FROM Book "+condition;
         ResultSet rs = ExecuteSelectQuery(query);
         try{
-            lst = new String[stmt.getMetaData().getColumnCount()-1];
             while(rs.next()){
-                lst[rs.getRow()-1] = rs.getString("Title") + ", " + rs.getString("Author");
+                lst.add(rs.getString("Title") + ", " + rs.getString("Author"));
             }
             stmt.close();
             rs.close();
@@ -195,13 +193,13 @@ public class DbController {
         return null;
     }
     
-    /*
+    /**
         This method is used to insert a new row in member table in the database.
         NO NULL COLUMS {Name , Surname}
         @param member Sets the member to save in database.
         @return boolean Either true in case of a successful save or false otherwise.
     */
-    public boolean SaveMember(Member member){
+    public static boolean SaveMember(Member member){
         ConOpen();
         String InsertQuery = "INSERT INTO member " +
                 "(`Name`,`Surname`,`File`,`Dni`,`Address`,`Age`,`Telephone1`,`Telephone2`) " +
@@ -231,13 +229,13 @@ public class DbController {
         return false;
     }
     
-    /*
+    /**
         This method is used to insert a new row in book table in the database.
         NO NULL COLUMS {Title, Author}
         @param book Sets the book to save in database.
         @return boolean Either true in case of a successful save or false otherwise.
     */
-    public boolean SaveBook(Book book){
+    public static boolean SaveBook(Book book){
         ConOpen();
         String InsertQuery = "INSERT INTO book " +
                 "(`title`,`author`,`pags`) " +
@@ -262,12 +260,12 @@ public class DbController {
         return false;
     }
     
-    /*
+    /**
         This method is used to insert a new row in genre table in the database.
         @param name Sets the name of genre to save in database.
         @return boolean Either true in case of a successful save or false otherwise.
     */
-    public boolean SaveGenre(String name){
+    public static boolean SaveGenre(String name){
         ConOpen();
         String InsertQuery = "INSERT INTO Genre " +
                 "(`name`) " +
@@ -290,11 +288,32 @@ public class DbController {
         return false;
     }
     
-    /*
+    public static boolean DeleteStatement(String Table,String condition){
+        ConOpen();
+        String DelQuery = "DELETE FROM "+Table+" WHERE "+condition;
+        try{
+            stmt = con.prepareStatement(DelQuery);
+
+            if (stmt.executeUpdate() == 0){
+                return false;
+            }
+            stmt.close();
+            ConClosed();
+            return true;
+        }catch (SQLException ex){
+            Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        ConClosed();
+        return false;
+        
+    }
+    
+    /**
       This method is used to closed connection with your database!
       That is useful in case of connection is open.
     */
-    private void ConClosed(){
+    private static void ConClosed(){
         if (con != null){
             try {
                 con.close();

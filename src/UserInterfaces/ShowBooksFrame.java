@@ -1,14 +1,16 @@
-package UserInterfaces;
+ package UserInterfaces;
 
+import Controllers.DbController;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.JOptionPane;
 import libraryClasses.*;
 
 /**
@@ -38,6 +40,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     private Timer timerCon;
     private JPanel extendPanel;
     private int animVel;
+    private DefaultListModel addBkGnsModel;
     // External - attributes
     private Controllers.UiController uiController;
     
@@ -50,9 +53,10 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         this.setTitle("Minimalist Management Library - V 0.0");
         animVel = 5;
         uiController = uic;
+        addBkGnsModel = new DefaultListModel();
     }
     
-    /*
+    /**
     * This method is used to initializate the timer's actionListener.
     */
     private void initTimers(){
@@ -98,14 +102,13 @@ public class ShowBooksFrame extends javax.swing.JFrame {
 
         jPnlAddBkContent = new javax.swing.JPanel();
         jPnlAddBkPnlContent = new javax.swing.JPanel();
-        jTxtTtl = new javax.swing.JTextField();
-        jTxtAthr = new javax.swing.JTextField();
+        jTxtBkTtl = new javax.swing.JTextField();
+        jTxtBkAthr = new javax.swing.JTextField();
         jBtnAddBk = new javax.swing.JButton();
-        jTxtPgs = new javax.swing.JFormattedTextField();
+        jTxtBkPgs = new javax.swing.JFormattedTextField();
         jScrGnr = new javax.swing.JScrollPane();
         jLstGenres = new javax.swing.JList<>();
-        jBtnAddGnr = new javax.swing.JButton();
-        jBtnDelGnr = new javax.swing.JButton();
+        jBtnAddBkSlsGnr = new javax.swing.JButton();
         jPnlSeeIndBkContent = new javax.swing.JPanel();
         jPnlSeeIndBkPnlContent = new javax.swing.JPanel();
         jLblSeeTitle = new javax.swing.JLabel();
@@ -161,7 +164,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jPnlIcon = new javax.swing.JPanel();
         jPnlSeeAllBkContent = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        jLstBksSrch = new javax.swing.JList<>();
         jTxtSrchBk = new javax.swing.JTextField();
         jBtnSrchBk = new javax.swing.JButton();
         jLblSrchBk = new javax.swing.JLabel();
@@ -179,35 +182,37 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         jPnlAddBkPnlContent.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPnlAddBkPnlContent.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTxtTtl.setBorder(javax.swing.BorderFactory.createTitledBorder("Titulo"));
-        jPnlAddBkPnlContent.add(jTxtTtl, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 8, 275, -1));
+        jTxtBkTtl.setBorder(javax.swing.BorderFactory.createTitledBorder("Titulo"));
+        jPnlAddBkPnlContent.add(jTxtBkTtl, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 8, 275, -1));
 
-        jTxtAthr.setBorder(javax.swing.BorderFactory.createTitledBorder("Autor"));
-        jPnlAddBkPnlContent.add(jTxtAthr, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 53, 275, -1));
+        jTxtBkAthr.setBorder(javax.swing.BorderFactory.createTitledBorder("Autor"));
+        jPnlAddBkPnlContent.add(jTxtBkAthr, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 53, 275, -1));
 
         jBtnAddBk.setText("Añadir");
+        jBtnAddBk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnAddBkActionPerformed(evt);
+            }
+        });
         jPnlAddBkPnlContent.add(jBtnAddBk, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 390, 107, 38));
 
-        jTxtPgs.setBorder(javax.swing.BorderFactory.createTitledBorder("Pags"));
-        jTxtPgs.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-        jPnlAddBkPnlContent.add(jTxtPgs, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 98, 64, -1));
+        jTxtBkPgs.setBorder(javax.swing.BorderFactory.createTitledBorder("Pags"));
+        jTxtBkPgs.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        jPnlAddBkPnlContent.add(jTxtBkPgs, new org.netbeans.lib.awtextra.AbsoluteConstraints(8, 98, 64, -1));
 
         jLstGenres.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Generos", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-        jLstGenres.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Fantasy" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jLstGenres.setSelectionBackground(new java.awt.Color(102, 102, 102));
         jScrGnr.setViewportView(jLstGenres);
 
         jPnlAddBkPnlContent.add(jScrGnr, new org.netbeans.lib.awtextra.AbsoluteConstraints(84, 98, 199, 170));
 
-        jBtnAddGnr.setText("+");
-        jPnlAddBkPnlContent.add(jBtnAddGnr, new org.netbeans.lib.awtextra.AbsoluteConstraints(84, 270, -1, -1));
-
-        jBtnDelGnr.setText("-");
-        jPnlAddBkPnlContent.add(jBtnDelGnr, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, -1, -1));
+        jBtnAddBkSlsGnr.setText("Seleccionar generos");
+        jBtnAddBkSlsGnr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnAddBkSlsGnrActionPerformed(evt);
+            }
+        });
+        jPnlAddBkPnlContent.add(jBtnAddBkSlsGnr, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 270, 180, -1));
 
         javax.swing.GroupLayout jPnlAddBkContentLayout = new javax.swing.GroupLayout(jPnlAddBkContent);
         jPnlAddBkContent.setLayout(jPnlAddBkContentLayout);
@@ -646,12 +651,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "El señor de los anillos - Tolkien", "Cuestion de confianza - Russ Harris - Autoayuda" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
+        jLstBksSrch.setEnabled(false);
+        jScrollPane1.setViewportView(jLstBksSrch);
 
         jPnlSeeAllBkContent.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 57, 320, 332));
         jPnlSeeAllBkContent.add(jTxtSrchBk, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 15, 280, -1));
@@ -721,7 +722,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         getContentPane().add(jPnlSeeAllBkContent, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    /*
+    /**
     *  This method is used to either extend panels to the MaxiumSize property height 
     *  or contract panels to the first children component height.
     *  @see initTimers()
@@ -738,7 +739,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         }
     }
     
-    /*
+    /**
     * This method is used to change color of label. It's called by MouseEntered/Exited action to create interactive effect.
     * The colors used are "fontFrsColor" for MouseEntered and "fontScdColor" for MouseExited.
     * @param component Sets which JLabel has the user's focus.
@@ -752,7 +753,7 @@ public class ShowBooksFrame extends javax.swing.JFrame {
         }
     }
     
-    /*
+    /**
     * This method is used to set which panel was selected by the user in the menu 
     * and will change central panel for it.
     * @param jPnlNew Sets which JPanel has been selected.
@@ -815,7 +816,17 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jLblShowMbrAllMouseExited
 
     private void jLblShowBksAllMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLblShowBksAllMousePressed
-        
+        if(jLstBksSrch.getModel().getSize() == 0){
+            List<String> lst = DbController.getBooksName("");
+            if (lst != null && !lst.isEmpty()){
+                DefaultListModel model = new DefaultListModel();
+                for(String m:lst){
+                    model.addElement(m);
+                }
+                jLstBksSrch.setModel(model);
+                jLstBksSrch.setEnabled(true);
+            }
+        }
         ChangePnl(jPnlSeeAllBkContent);
     }//GEN-LAST:event_jLblShowBksAllMousePressed
 
@@ -833,8 +844,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
 
     private void jLblShowMbrAllMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLblShowMbrAllMouseClicked
         if (jLstMbrSrch.getModel().getSize() == 0){
-            String[] lst = uiController.CallDbGetMembersName();
-            if (lst != null){  
+            List<String> lst = DbController.GetMembersName("");
+            if (lst != null && !lst.isEmpty()){
                 DefaultListModel model = new DefaultListModel();
                 for(String m:lst){
                     model.addElement(m);
@@ -873,16 +884,55 @@ public class ShowBooksFrame extends javax.swing.JFrame {
             if(!jTxtMbrDni.getText().isEmpty()){
                 temp.setDni( Integer.parseInt( jTxtMbrDni.getText()));
             }
-            uiController.CallDbSaveMember(temp);
-        } 
+            if (DbController.SaveMember(temp)){
+                JOptionPane.showMessageDialog(this,"Socio:"+temp.getName()+" "+temp.getSurname()+" guardado con exito","[-INFORMACION-]",JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_jBtnAddMbrActionPerformed
-     
+
+    private void jBtnAddBkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnAddBkActionPerformed
+        boolean addOk = true;
+        Book temp = new Book();
+        
+        if(jTxtBkTtl.getText().trim().isEmpty()){
+            addOk = false;
+        }
+        if(jTxtBkAthr.getText().trim().isEmpty()){
+            addOk = false;
+        }
+        if(addOk){
+            temp.setTitle(jTxtBkTtl.getText().trim());
+            temp.setAuthor(jTxtBkAthr.getText().trim());
+            temp.setPags(Integer.parseInt(jTxtBkPgs.getText()) );
+            if (DbController.SaveBook(temp)){
+                JOptionPane.showMessageDialog(this,"Libro: "+temp.getTitle()+" guardado con exito.","[-INFORMACION-]",JOptionPane.INFORMATION_MESSAGE);
+            }
+        }  
+    }//GEN-LAST:event_jBtnAddBkActionPerformed
+
+    private void jBtnAddBkSlsGnrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnAddBkSlsGnrActionPerformed
+        AddGenrejDialog slcGnr = new AddGenrejDialog(this,true);
+        try{
+        List<String> lstGns = DbController.GetGenres("");
+        DefaultListModel model = new DefaultListModel();
+        for(String m:lstGns){
+            model.addElement(m);
+        }
+        slcGnr.SetModelLstGen(model);
+        slcGnr.SetModelLstBkGen(addBkGnsModel);
+        slcGnr.setVisible(true);
+        } finally {
+            addBkGnsModel = slcGnr.getModelLstBkGen();
+            jLstGenres.setModel(addBkGnsModel);
+            slcGnr.dispose();
+        }
+    }//GEN-LAST:event_jBtnAddBkSlsGnrActionPerformed
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel JpnlConfig;
     private javax.swing.JButton jBtnAddBk;
-    private javax.swing.JButton jBtnAddGnr;
+    private javax.swing.JButton jBtnAddBkSlsGnr;
     private javax.swing.JButton jBtnAddMbr;
-    private javax.swing.JButton jBtnDelGnr;
     private javax.swing.JButton jBtnMbrSrch;
     private javax.swing.JButton jBtnMod;
     private javax.swing.JButton jBtnSrchBk;
@@ -911,8 +961,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLblShowMbrAll;
     private javax.swing.JLabel jLblSrchBk;
     private javax.swing.JLabel jLblToolTipMaxRow;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JList<String> jLslSeeGnr;
+    private javax.swing.JList<String> jLstBksSrch;
     private javax.swing.JList<String> jLstGenres;
     private javax.swing.JList<String> jLstMbrSrch;
     private javax.swing.JPanel jPnlAddBkContent;
@@ -937,7 +987,9 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSpinner jSpnMaxRow;
-    private javax.swing.JTextField jTxtAthr;
+    private javax.swing.JTextField jTxtBkAthr;
+    private javax.swing.JFormattedTextField jTxtBkPgs;
+    private javax.swing.JTextField jTxtBkTtl;
     private javax.swing.JFormattedTextField jTxtMbrAge;
     private javax.swing.JFormattedTextField jTxtMbrDni;
     private javax.swing.JTextField jTxtMbrFile;
@@ -949,10 +1001,8 @@ public class ShowBooksFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTxtMbrSurname;
     private javax.swing.JTextField jTxtMbrTlp1;
     private javax.swing.JTextField jTxtMbrTlp2;
-    private javax.swing.JFormattedTextField jTxtPgs;
     private javax.swing.JTextField jTxtSeeAthr;
     private javax.swing.JTextField jTxtSeePgs;
     private javax.swing.JTextField jTxtSrchBk;
-    private javax.swing.JTextField jTxtTtl;
     // End of variables declaration//GEN-END:variables
 }
